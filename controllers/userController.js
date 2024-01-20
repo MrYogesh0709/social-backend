@@ -3,7 +3,6 @@ import User from "../modals/UserModal.js";
 import { sendMail } from "../utils/nodeMailerConfig.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { origin } from "../utils/origin.js";
 import { StatusCodes } from "http-status-codes";
 
 export const forgotPasswordRequest = async (req, res) => {
@@ -14,8 +13,7 @@ export const forgotPasswordRequest = async (req, res) => {
   const user = await User.findOne({ email: email });
   if (user) {
     const token = crypto.randomBytes(48).toString("hex");
-    //TODO:CHANGE THIS
-    const resetURL = `${origin}/reset-password?token=${token}&email=${email}`;
+    const resetURL = `${process.env.ORIGIN}/reset-password?token=${token}&email=${email}`;
     const subject = "reset password for Social";
     const html = `<p>Please reset password by clicking on the following link : <a href="${resetURL}">Reset Password</a></p>`;
 

@@ -43,7 +43,7 @@ ORIGIN = YOUR_FRONTEND_ORIGIN
 
 
 
-## For FrontEnd Of Socail-APP
+## For FrontEnd Of Social-App
 
 https://github.com/MrYogesh0709/social-frontend
 

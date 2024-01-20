@@ -43,9 +43,9 @@ ORIGIN = YOUR_FRONTEND_ORIGIN
 
 
 
-## For Backend Of Socail-APP
+## For FrontEnd Of Socail-APP
 
-https://github.com/MrYogesh0709/social-backend
+https://github.com/MrYogesh0709/social-frontend
 
 
 ## 🚀 About Me

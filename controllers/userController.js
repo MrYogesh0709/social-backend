@@ -1,6 +1,10 @@
 import { BadRequestError } from "../errors/customError.js";
 import User from "../modals/UserModal.js";
-import { sendMail } from "../utils/nodeMailerConfig.js";
+import {
+  invoiceTemplateForForgotPassword,
+  invoiceTemplateForResetPassWord,
+  sendMail,
+} from "../utils/nodeMailerConfig.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
@@ -11,14 +15,18 @@ export const forgotPasswordRequest = async (req, res) => {
     throw new BadRequestError("Please enter email");
   }
   const user = await User.findOne({ email: email });
+  console.log(user);
   if (user) {
     const token = crypto.randomBytes(48).toString("hex");
-    const resetURL = `${process.env.ORIGIN}/reset-password?token=${token}&email=${email}`;
-    const subject = "reset password for Social";
-    const html = `<p>Please reset password by clicking on the following link : <a href="${resetURL}">Reset Password</a></p>`;
-
-    await sendMail({ to: email, subject, html });
     const tenMinutes = 1000 * 60 * 10;
+    const resetURL = `${process.env.ORIGIN}/reset-password?token=${token}&email=${email}`;
+    const subject = "Reset password Social";
+    const html = invoiceTemplateForForgotPassword({
+      user,
+      expirationTime: tenMinutes,
+      resetURL,
+    });
+    sendMail({ to: email, subject, html });
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
     user.resetPasswordToken = token;
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
@@ -39,7 +47,7 @@ export const resetPassword = async (req, res) => {
   }
   const user = await User.findOne({ email: email, resetPasswordToken: token });
   const currentDate = new Date();
-  if (user.passwordTokenExpirationDate < currentDate) {
+  if (!user || user.passwordTokenExpirationDate < currentDate) {
     throw new BadRequestError("Invalid Request try again...");
   }
   if (user) {
@@ -50,9 +58,9 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordToken = "";
     user.passwordTokenExpirationDate = null;
     await user.save();
-    const subject = "Password Changed for Social";
-    const html = `<p>Your Password has been changed</p>`;
-    await sendMail({ to: email, subject, html });
+    const subject = "Password Changed for Social.";
+    const html = invoiceTemplateForResetPassWord(user);
+    sendMail({ to: email, subject, html });
     res.status(StatusCodes.OK).json({ msg: "Password Reset Successful" });
   } else {
     throw new BadRequestError("Invalid Request try again...");

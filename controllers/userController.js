@@ -15,7 +15,6 @@ export const forgotPasswordRequest = async (req, res) => {
     throw new BadRequestError("Please enter email");
   }
   const user = await User.findOne({ email: email });
-  console.log(user);
   if (user) {
     const token = crypto.randomBytes(48).toString("hex");
     const tenMinutes = 1000 * 60 * 10;

@@ -19,10 +19,10 @@ import { corsMiddleware } from "./middleware/cors.js";
 const app = express();
 dotenv.config();
 
-app.set("trust proxy", 1);
-app.use(express.json({ limit: "50mb" }));
 app.use(corsMiddleware);
 app.use(cors(corsOptions));
+app.set("trust proxy", 1);
+app.use(express.json({ limit: "50mb" }));
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes

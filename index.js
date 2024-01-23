@@ -13,12 +13,16 @@ import {
   notFoundMiddleware,
 } from "./middleware/errorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
+import { corsOptions } from "./config/corsOptions.js";
+import { corsMiddleware } from "./middleware/cors.js";
 
 const app = express();
 dotenv.config();
 
 app.set("trust proxy", 1);
 app.use(express.json({ limit: "50mb" }));
+app.use(corsMiddleware);
+app.use(cors(corsOptions));
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -29,7 +33,6 @@ app.use(
 );
 app.use(helmet());
 app.use(xss());
-app.use(cors());
 
 //v2
 cloudinary.config({

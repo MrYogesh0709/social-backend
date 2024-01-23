@@ -30,7 +30,6 @@ export const forgotPasswordRequest = async (req, res) => {
     user.resetPasswordToken = token;
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
     await user.save();
-    console.log("mail sent");
     res
       .status(StatusCodes.OK)
       .json({ msg: "Please check your Email for Reset Password " });
@@ -62,7 +61,7 @@ export const resetPassword = async (req, res) => {
     await user.save();
     const subject = "Password Changed for Social.";
     const html = invoiceTemplateForResetPassWord(user);
-    sendMail({ to: email, subject, html });
+    await sendMail({ to: email, subject, html });
     res.status(StatusCodes.OK).json({ msg: "Password Reset Successful" });
   } else {
     throw new BadRequestError("Invalid Request try again...");

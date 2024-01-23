@@ -25,15 +25,18 @@ export const forgotPasswordRequest = async (req, res) => {
       expirationTime: tenMinutes,
       resetURL,
     });
-    sendMail({ to: email, subject, html });
+    await sendMail({ to: email, subject, html });
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
     user.resetPasswordToken = token;
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
     await user.save();
+    console.log("mail sent");
+    res
+      .status(StatusCodes.OK)
+      .json({ msg: "Please check your Email for Reset Password " });
+  } else {
+    throw new BadRequestError("No user found");
   }
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: "Please check your Email for Reset Password " });
 };
 
 export const resetPassword = async (req, res) => {
